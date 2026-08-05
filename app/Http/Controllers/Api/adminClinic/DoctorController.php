@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\adminClinic;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class PatientController extends Controller
+class DoctorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -27,7 +28,7 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**

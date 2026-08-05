@@ -22,30 +22,28 @@ class DoctorRequest extends FormRequest
      */
     public function rules(): array
     {
-          return [
-        'name' => 'required|string|max:255',
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:doctors,email',
+            'phone' => 'required|string|unique:doctors,phone',
+            'password' => 'required|min:8',
+            'national_id' => 'required|digits:14|unique:doctors,national_id',
+            'medical_license' => 'required|unique:doctors,medical_license',
+            'gender' => 'required|in:male,female',
+            'date_of_birth' => 'required|date',
+            'blood_type' => 'required|string|max:5',
+            'address' => 'required|string',
+            'status' => 'required|in:active,suspended',
+        ];
+    }
 
-        'email' => 'required|email|unique:doctors,email',
-
-        'phone' => 'required|string|unique:doctors,phone',
-
-        'password' => 'required|min:8',
-
-        'national_id' => 'required|digits:14|unique:doctors,national_id',
-
-        'medical_license' => 'required|unique:doctors,medical_license',
-
-        'specialization' => 'required|string|max:255',
-
-        'gender' => 'required|in:male,female',
-
-        'date_of_birth' => 'required|date',
-
-        'blood_type' => 'required|string|max:5',
-
-        'address' => 'required|string',
-
-        'status' => 'required|in:active,suspended',
-    ];
+    public function messages(): array
+    {
+        return [
+            'email.unique'           => 'هذا البريد الإلكتروني مسجل بالفعل في النظام.',
+            'phone.unique'           => 'رقم الهاتف هذا مسجل بالفعل في النظام.',
+            'national_id.unique'     => 'الرقم القومي مسجل بالفعل لطبيب آخر.',
+            'medical_license.unique' => 'ترخيص ممارسة المهنة هذا مسجل بالفعل.',
+        ];
     }
 }

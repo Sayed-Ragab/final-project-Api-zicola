@@ -32,10 +32,15 @@ class ClinicRequest extends FormRequest
     }
     public function messages(): array
     {
-        return [
-            'name.required'        => 'اسم العيادة مطلوب ولا يمكن تركه فارغاً.',
-            'max_doctors.required' => 'حدد الحد الأقصى لعدد الأطباء.',
-            'max_doctors.integer'  => 'عدد الأطباء يجب أن يكون رقماً.',
-        ];
+       return [
+        'name.required'        => 'اسم العيادة مطلوب ولا يمكن تركه فارغاً.',
+        'name.unique'          => 'هذه العيادة مسجلة بالفعل في النظام.', 
+        'phone.unique'         => 'رقم الهاتف هذا مسجل لعيادة أخرى بالفعل.', 
+        'max_doctors.required' => 'حدد الحد الأقصى لعدد الأطباء.',
+        'max_doctors.integer'  => 'عدد الأطباء يجب أن يكون رقماً صحيحاً.',
+        'max_doctors.min'      => 'يجب أن يكون الحد الأقصى للأطباء طبيب واحد على الأقل.',
+        'payment_date.date'    => 'تاريخ الدفع يجب أن يكون تاريخاً صحيحاً.',
+    ];
+    
     }
 }

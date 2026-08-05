@@ -1,0 +1,118 @@
+class AppointmentController extends Controller
+{
+    public function index(Request $request)
+    {
+        $appointments = Appointment::with([
+                'patient:id,name',
+                'doctor:id,name',
+                'clinic:id,name',
+                'prescription:id',
+            ])
+            ->filter()
+            ->latest('appointment_date')
+            ->paginate(10);
+
+        return response()->json($appointments);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
+            'clinic_id' => 'required|exists:clinics,id',
+            'prescription_id' => 'required|exists:prescriptions,id',
+            'appointment_date' => 'required|date',
+            'status' => 'required|in:Active,InAcive',
+        ]);
+
+        $appointment = Appointment::create($data);
+
+        return response()->json(
+            $appointment->load([
+                'patient:id,name',
+                'doctor:id,name',
+                'clinic:id,name',
+                'prescription:id',
+            ]),
+            201
+        );
+    }
+
+    public function show(Appointment $appointment)
+    {
+        return response()->json(
+            $appointment->load([
+                'patient:id,name',
+                'doctor:id,name',
+                'clinic:id,name',
+                'prescription:id',
+            ])
+        );
+    }
+
+    public function update(Request $request, Appointment $appointment)
+    {
+        $data = $request->validate([
+            'patient_id' => 'sometimes|exists:patients,id',
+            'doctor_id' => 'sometimes|exists:doctors,id',
+            'clinic_id' => 'sometimes|exists:clinics,id',
+            'prescription_id' => 'sometimes|exists:prescriptions,id',
+            'appointment_date' => 'sometimes|date',
+            'status' => 'sometimes|in:Active,InAcive',
+        ]);
+
+        $appointment->update($data);
+
+        return response()->json(
+            $appointment->load([
+                'patient:id,name',
+                'doctor:id,name',
+                'clinic:id,name',
+                'prescription:id',
+            ])
+        );
+    }
+
+    public function destroy(Appointment $appointment)
+    {
+        $appointment->delete();
+
+        return response()->json([
+            'message' => 'Appointment deleted successfully.',
+        ]);
+    }
+}
+
+
+
+
+
+use Illuminate\Database\Eloquent\Builder;
+
+public function scopeFilter(Builder $query): Builder
+{
+    return $query
+        ->when(request('date'), function ($query, $date) {
+            $query->whereDate('appointment_date', $date);
+        })
+        ->when(request('name') && request('type'), function ($query) {
+            $relation = request('type');
+            $name = request('name');
+
+            $allowedRelations = [
+                'patient',
+                'doctor',
+                'clinic',
+                'prescription',
+            ];
+
+            if (! in_array($relation, $allowedRelations)) {
+                return;
+            }
+
+            $query->whereHas($relation, function ($q) use ($name) {
+                $q->where('name', 'like', "%{$name}%");
+            });
+        });
+}

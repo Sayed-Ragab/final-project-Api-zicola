@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClinicRequest;
 use App\services\ClinicService;
+use App\Traits\uploadImageTrait;
 use Illuminate\Http\Request;
 
 class Clinic_Controller extends Controller
 {
+    use uploadImageTrait;
     public function __construct(protected ClinicService $clinic_service)
     {
         $this->clinic_service = $clinic_service;
@@ -36,7 +38,7 @@ class Clinic_Controller extends Controller
         if($clinic){
               return response()->json([
             'status' => true,
-            'message' => 'Doctor  created  successfully.',
+            'message' => 'AdminClinic  created  successfully.',
             'data' => $clinic, 
         ],201);
         }
@@ -67,7 +69,7 @@ class Clinic_Controller extends Controller
         if($clinic){
               return response()->json([
             'status' => true,
-            'message' => 'Doctor  Update  successfully.',
+            'message' => 'clinic  Update  successfully.',
             'data' => $clinic, 
         ],201);
         }
@@ -77,7 +79,7 @@ class Clinic_Controller extends Controller
         if($clinic){
               return response()->json([
             'status' => true,
-            'message' => 'Doctor searched successfully.',
+            'message' => 'clinic searched successfully.',
             'data' => $clinic, 
         ],201);
         }
@@ -90,10 +92,34 @@ class Clinic_Controller extends Controller
              if($clinic){
               return response()->json([
             'status' => true,
-            'message' => 'Doctor Deleted successfully.',
+            'message' => 'Clinic Deleted successfully.',
             'data' => $clinic, 
         ],201);
 
     }
 }
+public function details(string $id){
+      $clinic = $this->clinic_service->details($id);
+    if (!$clinic) {
+        return response()->json([
+            'message' => 'العيادة غير موجودة'
+        ], 404);
+    }
+    
+      return response()->json([
+        'id'            => $clinic->id,
+        'name'          => $clinic->name,
+        'description'   => $clinic->description,
+        'address'       => $clinic->address,
+        'phone'         => $clinic->phone,
+        'status'        => $clinic->status,
+       'image' => $clinic->Images->first()
+    ? asset('upload_image/clinics/' . $clinic->Images->first()->filename)
+    : null,
+        'active_admins' => $clinic->admins()->where('status', 'active')->count(),
+        'total_doctors' => $clinic->max_doctors,
+        'todays_visits' => $clinic->appointments()->distinct('patient_id')->count('patient_id'),
+    ]);
 }
+}
+

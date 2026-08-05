@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Database\Factories\Boold_GroupFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use PhpParser\Comment\Doc;
@@ -17,8 +18,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+         Boold_GroupFactory::class,
           Doctors::class,  
-        appointment_doctor::class,
+          appointment_doctor::class,
           
         ]);
 

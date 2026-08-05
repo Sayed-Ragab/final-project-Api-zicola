@@ -20,4 +20,13 @@ class Doctor extends Authenticatable
     {
         return $this->morphOne(Image::class, 'imageable');
     }
+     public function specialization()
+    {
+        return $this->belongsTo(Specialization::class);
+    }
+
+    public function appointments()
+{
+    return $this->hasMany(Appointment::class);
+}
 }

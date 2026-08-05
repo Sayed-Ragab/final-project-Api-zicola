@@ -21,8 +21,9 @@ return new class extends Migration
 
             $table->string('national_id')->unique();
             $table->string('medical_license')->unique();
+            $table->foreignId('clinic_id')->references('id')->on('clinics')->onDelete('cascade');
 
-            $table->string('specialization');
+            $table->foreignId('specialization_id')->references('id')->on('specializations')->onDelete('cascade');
 
             $table->enum('gender', ['male', 'female']);
 
