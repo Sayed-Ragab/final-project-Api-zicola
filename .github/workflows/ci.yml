@@ -24,7 +24,13 @@ jobs:
           coverage: none
 
       - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          composer dump-autoload --optimize
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,11 +43,6 @@ jobs:
 
       - name: Build frontend
         run: npm run build
-
-      - name: Prepare Laravel
-        run: |
-          cp .env.example .env
-          php artisan key:generate
 
       - name: Run tests
         run: php artisan test
