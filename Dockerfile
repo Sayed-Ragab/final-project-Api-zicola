@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Install required packages and PHP extensions
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -30,20 +30,23 @@ WORKDIR /var/www
 # Copy Composer files first for Docker cache
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies without running Laravel scripts yet
-RUN composer install --no-interaction --prefer-dist --no-scripts
+# Install PHP dependencies
+RUN composer install \
+    --no-interaction \
+    --prefer-dist \
+    --no-scripts \
+    --optimize-autoloader
 
-# Copy the application
+# Copy application
 COPY . .
 
-# Run Laravel package discovery after artisan is available
-RUN php artisan package:discover --ansi
+# Install frontend dependencies
+RUN npm ci
 
-# Install frontend dependencies and build Vite
-RUN npm install
+# Build frontend
 RUN npm run build
 
-# Set Laravel permissions
+# Laravel permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 9000
