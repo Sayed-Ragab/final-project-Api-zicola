@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# تثبيت الأدوات المطلوبة
+# Install required packages and PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -10,34 +10,40 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libicu-dev \
     default-mysql-client \
-    && docker-php-ext-install pdo pdo_mysql zip
+    && docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    zip \
+    intl \
+    && rm -rf /var/lib/apt/lists/*
 
-# تثبيت Composer
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# تثبيت Node.js 22
+# Install Node.js 22
 COPY --from=node:22 /usr/local /usr/local
 
 WORKDIR /var/www
 
-# نسخ ملفات Composer أولًا للاستفادة من الكاش
+# Copy Composer files first for Docker cache
 COPY composer.json composer.lock ./
 
-# منع Composer scripts مؤقتًا لأن artisan لم يتم نسخه بعد
+# Install PHP dependencies without running Laravel scripts yet
 RUN composer install --no-interaction --prefer-dist --no-scripts
 
-# نسخ باقي المشروع
+# Copy the application
 COPY . .
 
-# تشغيل Composer scripts بعد وجود artisan
+# Run Laravel package discovery after artisan is available
 RUN php artisan package:discover --ansi
 
-# تثبيت مكتبات الفرونت الخاصة بـ Laravel وبناء Vite
+# Install frontend dependencies and build Vite
 RUN npm install
 RUN npm run build
 
-# صلاحيات Laravel
+# Set Laravel permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 9000

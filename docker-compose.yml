@@ -33,6 +33,7 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
+      APP_KEY: "base64:OCx04i80SF4ydDXjFpvCGAZsPUOckwxDEkC/Vs3xE3g="
 
       DB_CONNECTION: mysql
       DB_HOST: mysql
