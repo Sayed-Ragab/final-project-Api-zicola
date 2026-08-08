@@ -13,18 +13,17 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-         then: function () {
+        then: function () {
             Route::middleware('api')
                 ->prefix('api/adminclinic')
-                ->group(base_path('routes/adminclinic.php'));
+                ->group(base_path('routes/AdminClinic.php'));
         }
     )
-    
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-        'admin' => AdminMiddleware::class,
-        'adminclinic'=>AdminClinicMiddleware::class
-    ]);
+            'admin' => AdminMiddleware::class,
+            'adminclinic' => AdminClinicMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
